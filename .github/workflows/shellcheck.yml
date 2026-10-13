@@ -1,0 +1,13 @@
+name: ShellCheck
+on:
+  push:
+  pull_request:
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run ShellCheck
+        run: shellcheck verify.sh
+      - name: Check bash syntax
+        run: bash -n verify.sh
