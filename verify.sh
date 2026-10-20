@@ -117,6 +117,18 @@ case "$PLATFORM" in
     ;;
 esac
 
+if [ "$PLATFORM" = "mac" ]; then
+  # Not 'uname -m': a Terminal running under Rosetta on Apple Silicon reports
+  # x86_64. hw.optional.arm64 is 1 on Apple Silicon either way.
+  if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then
+    pass "Apple Silicon Mac"
+  else
+    fail "This Mac has an Intel processor, and Homebrew no longer supports Intel Macs" \
+      "Use Part 3 (Cloud Shell) instead of Part 2, and run this script there." \
+      "$GUIDE/troubleshooting/#mac-intel"
+  fi
+fi
+
 if [ "$PLATFORM" = "wsl" ]; then
   case "$PWD" in
     /mnt/*)
