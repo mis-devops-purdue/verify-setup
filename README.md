@@ -1,6 +1,6 @@
 # verify-setup
 
-A script that checks your **MIS 58710** Week 1 setup and prints a summary to screenshot for **Prep 2 – Setup**.
+A script that checks your **MIS 58710** Week 1 setup and prints a summary to screenshot for **Prep 3 – Set Up Your Computer for DevOps**.
 
 Setup instructions are in the [MIS 58710 Setup Guide](https://mis-devops-purdue.github.io/setup-guide/). This repository is used on the guide's [Verify your setup](https://mis-devops-purdue.github.io/setup-guide/verify/) page.
 
