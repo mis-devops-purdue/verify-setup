@@ -123,8 +123,10 @@ if [ "$PLATFORM" = "mac" ]; then
   if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then
     pass "Apple Silicon Mac"
   else
-    fail "This Mac has an Intel processor, and Homebrew no longer supports Intel Macs" \
-      "Use Part 3 (Cloud Shell) instead of Part 2, and run this script there." \
+    # A warning, not a failure: an Intel Mac set up with MacPorts can still
+    # pass every other check.
+    warn "This Mac has an Intel processor, and Homebrew no longer supports Intel Macs" \
+      "Cloud Shell (Part 3) is recommended. If you set up with MacPorts instead, the checks below still apply." \
       "$GUIDE/troubleshooting/#mac-intel"
   fi
 fi
