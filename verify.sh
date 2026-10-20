@@ -248,12 +248,32 @@ if have poetry; then
   if (cd / && poetry export --help >/dev/null 2>&1); then
     pass "Poetry export plugin is installed"
   else
+    export_problem="Poetry export plugin is missing"
     if [ "$PLATFORM" = "cloudshell" ]; then
       export_fix="poetry self add poetry-plugin-export"
     else
       export_fix="pipx inject poetry poetry-plugin-export"
+
+      # With two Poetry installs (often Homebrew's ahead of pipx's), the first
+      # one on PATH is the one missing the plugin, and injecting into pipx's
+      # copy changes nothing. PATH can list a folder twice, so de-duplicate.
+      poetry_paths=$(type -ap poetry 2>/dev/null | awk '!seen[$0]++')
+      poetry_count=$(printf '%s\n' "$poetry_paths" | grep -c .)
+      if [ "$poetry_count" -ge 2 ]; then
+        poetry_first=$(printf '%s\n' "$poetry_paths" | head -n 1)
+        poetry_others=$(printf '%s\n' "$poetry_paths" | awk 'NR > 1 { printf "%s%s", (NR > 2 ? ", " : ""), $0 }')
+        export_problem="More than one Poetry is installed, and the first one on your PATH ($poetry_first) is missing the export plugin. Other copies: $poetry_others"
+        case "$poetry_first" in
+          /opt/homebrew/* | /usr/local/*)
+            export_fix="Run 'brew uninstall poetry', then 'hash -r'. Keep the pipx copy."
+            ;;
+          *)
+            export_fix="Remove the extra Poetry at $poetry_first so the pipx copy comes first on your PATH, then run 'hash -r'."
+            ;;
+        esac
+      fi
     fi
-    fail "Poetry export plugin is missing" "$export_fix" "$(page python-and-poetry)"
+    fail "$export_problem" "$export_fix" "$(page python-and-poetry)"
   fi
 
   in_project=$(cd / && poetry config virtualenvs.in-project 2>/dev/null | tail -n 1)
